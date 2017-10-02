@@ -1,16 +1,16 @@
 #pragma once
-#include <iostream>
-#include <string>
-#include <stack>
+#include "ExpressionManagerInterface.h"
+#include <sstream>
 
 using namespace std;
 
-
-class ExpressionManagerInterface
+class ExpressionManager
 {
+	public ExpressionManagerInterface
+
 public:
-	ExpressionManagerInterface() {}
-	virtual ~ExpressionManagerInterface() {}
+	ExpressionManager() {}
+	~ExpressionManager() {}
 
 	/*
 	* Checks whether an expression is balanced on its parentheses
@@ -21,7 +21,7 @@ public:
 	* @return false otherwise
 	*/
 
-	virtual bool isBalanced(string expression) = 0;
+	bool isBalanced(string expression) = 0;
 
 	/**
 	* Converts a postfix expression into an infix expression
@@ -35,7 +35,7 @@ public:
 	* return the string "invalid" if postfixExpression is not a valid postfix expression.
 	* otherwise, return the correct infix expression as a string.
 	*/
-	virtual string postfixToInfix(string postfixExpression) = 0;
+	string postfixToInfix(string postfixExpression) = 0;
 
 	/*
 	* Evaluates a postfix expression returns the result as a string
@@ -46,7 +46,7 @@ public:
 	* return the string "invalid" if postfixExpression is not a valid postfix Expression
 	* otherwise, return the correct evaluation as a string
 	*/
-	virtual string postfixEvaluate(string postfixExpression) = 0;
+	string postfixEvaluate(string postfixExpression) = 0;
 
 	/*
 	* Converts an infix expression into a postfix expression
@@ -59,6 +59,6 @@ public:
 	* return the string "invalid" if infixExpression is not a valid infix expression.
 	* otherwise, return the correct postfix expression as a string.
 	*/
-	virtual string infixToPostfix(string infixExpression) = 0;
+	string infixToPostfix(string infixExpression) = 0;
 
 };
