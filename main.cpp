@@ -37,7 +37,7 @@ int main() {
 		else {
 			std::cout << "Reading file" << i + 1 << ".txt..." << std::endl;
 		}
-		
+
 		std::cout << "Beginning out_file" << i + 1 << ".txt write" << std::endl;
 		while (ta::getline(ifs, temp)) { // while there are more instructions to get,
 			parse_instruction(temp, ofs, expptr); // parse the instructions using the ExpressionManager
