@@ -21,6 +21,24 @@ bool ExpressionManager::isClose(char ch)
   return CLOSE.find(ch) != string::npos;
 }
 
+bool ExpressionManager::isNumber(string t)
+{
+  for (int i = 0; i < t.size(); i++)
+  {
+    if (!isdigit(t.at(i)))
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+const std::string OPERATORS = "+-*/";
+bool ExpressionManager::isOperator(string t)
+{
+  return OPERATORS.find(t) != std::string::npos;
+}
+
 bool ExpressionManager::isBalanced(string expression)
 {
   stack<char> s;
@@ -53,13 +71,90 @@ bool ExpressionManager::isBalanced(string expression)
 
 string ExpressionManager::postfixToInfix(string postfixExpression)
 {
-//  stack<string> postfixString;
+  //const string OPERATORS = "+-*/";
+  //const int PRECEDENCE[] = { 1, 1, 2, 2 };
+
+  stack<string> postfixString;
+  string tempToken = "";
+  string pushToStack = "";
+  stringstream getInput(postfixExpression);
+  while (getInput >> tempToken)
+  {
+    if (isNumber(tempToken))
+    {
+      postfixString.push(tempToken);
+    }
+    else if (!isOperator(tempToken))
+      {
+        return "invalid";
+      }
+    else
+    {
+      if (postfixString.size() < 2)
+      {
+        return "invalid";
+      }
+      string temp2 = postfixString.top();
+      if (tempToken == "/" || tempToken == "%" && temp2 == "0")
+      {
+        return "invalid";
+      }
+      postfixString.pop();
+      string temp3 = "( " + postfixString.top() + " " + tempToken + " " + temp2 + " )";
+      postfixString.pop();
+      postfixString.push(temp3);
+
+      if (postfixString.size() > 1)
+      {
+        return "invalid";
+      }
+    }
+  }
 
   return 0;
 }
 
 string ExpressionManager::postfixEvaluate(string postfixExpression)
 {
+  //const string OPERATORS = "+-*/";
+  //const int PRECEDENCE[] = { 1, 1, 2, 2 };
+
+  stack<string> postfixString;
+  string tempToken = "";
+  string pushToStack = "";
+  stringstream getInput(postfixExpression);
+  while (getInput >> tempToken)
+  {
+    if (isNumber(tempToken))
+    {
+      postfixString.push(tempToken);
+    }
+    else if (!isOperator(tempToken))
+      {
+        return "invalid";
+      }
+    else
+    {
+      if (postfixString.size() < 2)
+      {
+        return "invalid";
+      }
+      string temp2 = postfixString.top();
+      if (tempToken == "/" || tempToken == "%" && temp2 == "0")
+      {
+        return "invalid";
+      }
+      postfixString.pop();
+      string temp3 = "( " + postfixString.top() + " " + tempToken + " " + temp2 + " )";
+      postfixString.pop();
+      postfixString.push(temp3);
+
+      if (postfixString.size() > 1)
+      {
+        return "invalid";
+      }
+    }
+  }
 
   return 0;
 }

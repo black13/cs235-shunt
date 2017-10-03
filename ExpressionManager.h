@@ -19,6 +19,13 @@ public:
 	bool isOpen(char ch);
 	bool isClose(char ch);
 
+	bool isLeftParen(string t);
+	bool isRightParen(string t);
+	bool isOperator(string left, string right);
+	bool isOperator(string t);
+	bool isNumber(string t);
+	//int precedence(string operator);
+
 	/*
 	* Checks whether an expression is balanced on its parentheses
 	*
