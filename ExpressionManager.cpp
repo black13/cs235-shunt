@@ -33,7 +33,63 @@ bool ExpressionManager::isNumber(string t)
   return true;
 }
 
-const std::string OPERATORS = "+-*/";
+bool ExpressionManager::isLeftParen(string t)
+{
+  for (int i = 0; i < t.size(); i++)
+  {
+    if (t == "(" || t == "[" || t == "{")
+    {
+      return true;
+    }
+    else
+      return false;
+  }
+}
+
+bool ExpressionManager::isRightParen(string t)
+{
+  for (int i = 0; i < t.size(); i++)
+  {
+    if (t == ")" || t == "]" || t == "}")
+    {
+      return true;
+    }
+    else
+      return false;
+  }
+}
+
+int ExpressionManager::precedence(string operator)
+{
+  switch (t.at(0))
+  {
+    case ')' :
+    case '}' :
+    case ']' :
+      return 3;
+      break;
+    case '(' :
+    case '{' :
+    case '[' :
+      return 0;
+      break;
+    case '/' :
+    case '%' :
+    case '*' :
+      return 2;
+      break;
+    case '+' :
+    case '-' :
+      return 1;
+      break;
+  }
+}
+
+const std::string OPERATORS = "+-*/%";
+const std::string OPERATORS2 = "({[)}]"
+const std::string PRECEDENCE[] = { 1, 1, 2, 2 };
+const std::string PRECEDENCE2[] = { 0, 0, 0, 3, 3, 3 };
+
 bool ExpressionManager::isOperator(string t)
 {
   return OPERATORS.find(t) != std::string::npos;
@@ -50,7 +106,7 @@ bool ExpressionManager::isBalanced(string expression)
     if (isOpen(nextCH))
     {
       s.push(nextCH);
-    }
+    }l
     else if (isClose(nextCH))
     {
       if (s.empty())
@@ -71,13 +127,13 @@ bool ExpressionManager::isBalanced(string expression)
 
 string ExpressionManager::postfixToInfix(string postfixExpression)
 {
-  //const string OPERATORS = "+-*/";
-  //const int PRECEDENCE[] = { 1, 1, 2, 2 };
 
   stack<string> postfixString;
   string tempToken = "";
   string pushToStack = "";
   stringstream getInput(postfixExpression);
+  int precedence = 0;
+
   while (getInput >> tempToken)
   {
     if (isNumber(tempToken))
@@ -95,7 +151,7 @@ string ExpressionManager::postfixToInfix(string postfixExpression)
         return "invalid";
       }
       string temp2 = postfixString.top();
-      if (tempToken == "/" || tempToken == "%" && temp2 == "0")
+      if ((tempToken == "/" || tempToken == "%") && temp2 == "0")
       {
         return "invalid";
       }
@@ -104,22 +160,26 @@ string ExpressionManager::postfixToInfix(string postfixExpression)
       postfixString.pop();
       postfixString.push(temp3);
 
-      if (postfixString.size() > 1)
-      {
-        return "invalid";
-      }
+
     }
   }
+  if (postfixString.size() > 1)
+  {
+    return "invalid";
+  }
 
-  return 0;
+
+  return postfixString.top();
 }
+
+
+
+
+
 
 string ExpressionManager::postfixEvaluate(string postfixExpression)
 {
-  //const string OPERATORS = "+-*/";
-  //const int PRECEDENCE[] = { 1, 1, 2, 2 };
-
-  stack<string> postfixString;
+  stack<int> postfixInt;
   string tempToken = "";
   string pushToStack = "";
   stringstream getInput(postfixExpression);
@@ -127,7 +187,7 @@ string ExpressionManager::postfixEvaluate(string postfixExpression)
   {
     if (isNumber(tempToken))
     {
-      postfixString.push(tempToken);
+      postfixInt.push(atoi(tempToken.c_str()));
     }
     else if (!isOperator(tempToken))
       {
@@ -135,31 +195,79 @@ string ExpressionManager::postfixEvaluate(string postfixExpression)
       }
     else
     {
-      if (postfixString.size() < 2)
+      if (postfixInt.size() < 2)
       {
         return "invalid";
       }
-      string temp2 = postfixString.top();
-      if (tempToken == "/" || tempToken == "%" && temp2 == "0")
+      int temp2 = postfixInt.top();
+      if ((tempToken == "/" || tempToken == "%") && temp2 == 0)
       {
         return "invalid";
       }
-      postfixString.pop();
-      string temp3 = "( " + postfixString.top() + " " + tempToken + " " + temp2 + " )";
-      postfixString.pop();
-      postfixString.push(temp3);
+      postfixInt.pop();
 
-      if (postfixString.size() > 1)
-      {
-        return "invalid";
-      }
+      int temp3;
+  switch (tempToken.at(0))
+  {
+    case '*' :
+      temp3 = postfixInt.top() * temp2;
+      break;
+    case '/' :
+      temp3 = postfixInt.top() / temp2;
+      break;
+    case '+' :
+      temp3 = postfixInt.top() + temp2;
+      break;
+    case '-' :
+      temp3 = postfixInt.top() - temp2;
+      break;
+    case '%' :
+      temp3 = postfixInt.top() % temp2;
+      break;
+  }
+
+//      string temp3 = "( " + postfixInt.top() + " " + tempToken + " " + temp2 + " )";
+      postfixInt.pop();
+      postfixInt.push(temp3);
+
+
     }
   }
 
-  return 0;
+  if (postfixInt.size() > 1)
+  {
+    return "invalid";
+  }
+
+  stringstream ss;
+  ss << postfixInt.top();
+  string str = ss.str();
+  return str; //needs to be a string
 }
 
 string ExpressionManager::infixToPostfix(string infixExpression)
 {
+  stack<string> postfixString;
+  string tempToken = "";
+  string postfix = "";
+  stringstream getInput(postfixExpression);
+
+  while (getInput >> tempToken)
+  {
+    if (isNumber(tempToken))
+    {
+      postfixInt.push(tempToken);
+    }
+    else if (isOperator(tempToken))
+      {
+        return "invalid";
+      }
+
+
+
+
+
+  }
+
   return 0;
 }

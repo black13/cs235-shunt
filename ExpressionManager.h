@@ -24,7 +24,7 @@ public:
 	bool isOperator(string left, string right);
 	bool isOperator(string t);
 	bool isNumber(string t);
-	//int precedence(string operator);
+	int getPrecedence(string operator);
 
 	/*
 	* Checks whether an expression is balanced on its parentheses
