@@ -236,6 +236,16 @@ string ExpressionManager::postfixEvaluate(string postfixExpression)
   return str; //needs to be a string
 }
 
+
+
+
+
+
+
+
+
+
+
 string ExpressionManager::infixToPostfix(string infixExpression)
 {
   stack<string> postfixString;
@@ -280,10 +290,6 @@ string ExpressionManager::infixToPostfix(string infixExpression)
   {
     return "invalid";
   }
-
-
-
-
 
   while (getInput >> tempToken)
   {
@@ -339,10 +345,10 @@ string ExpressionManager::infixToPostfix(string infixExpression)
 
     else if (isLeftParen(tempToken))
     {
-      if (isNumber(prevToken) || isRightParen(prevToken))
+    /*  if (isNumber(prevToken) || isRightParen(prevToken))
       {
         return "invalid";
-      }
+      }*/
       postfixString.push(tempToken);
     }
 
