@@ -10,6 +10,11 @@ using namespace std;
 
 const string OPEN = "([{";
 const string CLOSE = ")]}";
+const std::string OPERATORS = "+-*/%";
+const std::string OPERATORS2 = "({[)}]";
+const int PRECEDENCE[] = { 1, 1, 2, 2 };
+const int PRECEDENCE2[] = { 0, 0, 0, 3, 3, 3 };
+
 
 bool ExpressionManager::isOpen(char ch)
 {
@@ -59,7 +64,7 @@ bool ExpressionManager::isRightParen(string t)
   }
 }
 
-int ExpressionManager::precedence(string operator)
+int ExpressionManager::getPrecedence(string t)
 {
   switch (t.at(0))
   {
@@ -85,11 +90,6 @@ int ExpressionManager::precedence(string operator)
   }
 }
 
-const std::string OPERATORS = "+-*/%";
-const std::string OPERATORS2 = "({[)}]"
-const std::string PRECEDENCE[] = { 1, 1, 2, 2 };
-const std::string PRECEDENCE2[] = { 0, 0, 0, 3, 3, 3 };
-
 bool ExpressionManager::isOperator(string t)
 {
   return OPERATORS.find(t) != std::string::npos;
@@ -106,7 +106,7 @@ bool ExpressionManager::isBalanced(string expression)
     if (isOpen(nextCH))
     {
       s.push(nextCH);
-    }l
+    }
     else if (isClose(nextCH))
     {
       if (s.empty())
@@ -172,11 +172,6 @@ string ExpressionManager::postfixToInfix(string postfixExpression)
   return postfixString.top();
 }
 
-
-
-
-
-
 string ExpressionManager::postfixEvaluate(string postfixExpression)
 {
   stack<int> postfixInt;
@@ -225,12 +220,8 @@ string ExpressionManager::postfixEvaluate(string postfixExpression)
       temp3 = postfixInt.top() % temp2;
       break;
   }
-
-//      string temp3 = "( " + postfixInt.top() + " " + tempToken + " " + temp2 + " )";
       postfixInt.pop();
       postfixInt.push(temp3);
-
-
     }
   }
 
@@ -250,24 +241,142 @@ string ExpressionManager::infixToPostfix(string infixExpression)
   stack<string> postfixString;
   string tempToken = "";
   string postfix = "";
-  stringstream getInput(postfixExpression);
+  int precedence = 0;
+  string prevToken = "";
+  int tokenNumber = 0;
+  stringstream getInput(infixExpression);
+
+  stack<char> stack;
+  bool balanced = true;
+  string::const_iterator iter = infixExpression.begin();
+  while (balanced && (iter != infixExpression.end()))
+  {
+    char nextCH = *iter;
+    if (isOpen(nextCH))
+    {
+      stack.push(nextCH);
+    }
+    else if (isClose(nextCH))
+    {
+      if (stack.empty())
+      {
+        balanced = false;
+      }
+      else
+      {
+        char topCH = stack.top();
+        stack.pop();
+        balanced = OPEN.find(topCH) == CLOSE.find(nextCH);
+      }
+    }
+    ++iter;
+  }
+
+  if (balanced == false)
+  {
+    return "invalid";
+  }
+  if (stack.empty() == false)
+  {
+    return "invalid";
+  }
+
+
+
+
 
   while (getInput >> tempToken)
   {
+    tokenNumber++;
+
     if (isNumber(tempToken))
     {
-      postfixInt.push(tempToken);
+      if (tokenNumber < 2)
+      {
+        postfix += tempToken + " ";
+      }
+
+      else if (isNumber(prevToken) || isRightParen(prevToken))
+      {
+        return "invalid";
+      }
     }
-    else if (isOperator(tempToken))
+
+
+
+    else if (isOperator((tempToken)))
+    {
+      if (isOperator(prevToken) || isLeftParen(prevToken))
       {
         return "invalid";
       }
 
 
 
+      if (postfixString.size() < 1)
+      {
+        postfixString.push(tempToken);
+      }
+
+      else if (getPrecedence(tempToken) > getPrecedence(postfixString.top()))
+      {
+        postfixString.push(tempToken);
+      }
+
+      else
+      {
+        while ((!postfixString.empty()) && getPrecedence(tempToken) <= getPrecedence(postfixString.top()))
+        {
+          postfix += postfixString.top() + " ";
+          postfixString.pop();
+        }
+        postfixString.push(tempToken);
+      }
+    }
 
 
-  }
 
-  return 0;
+
+    else if (isLeftParen(tempToken))
+    {
+      if (isNumber(prevToken) || isRightParen(prevToken))
+      {
+        return "invalid";
+      }
+      postfixString.push(tempToken);
+    }
+
+
+    else if (isRightParen(tempToken))
+    {
+      if (isLeftParen(prevToken) || isOperator(prevToken))
+      {
+        return "invalid";
+      }
+
+      while ((!postfixString.empty()) && (!(OPEN.find(postfixString.top()) == CLOSE.find(tempToken))))
+      {
+        postfix += postfixString.top() + " ";
+        postfixString.pop();
+      }
+
+      if (!postfixString.empty())
+      {
+        postfixString.pop();
+      }
+
+    }
+      else
+      {
+        return "invalid";
+      }
+      prevToken = tempToken;
+    }
+    while (!postfixString.empty())
+    {
+      postfix += postfixString.top() + " ";
+      postfixString.pop();
+    }
+    postfix.erase(postfix.size() - 1);
+    return postfix;
 }
