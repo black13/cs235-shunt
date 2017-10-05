@@ -306,6 +306,9 @@ string ExpressionManager::infixToPostfix(string infixExpression)
       {
         return "invalid";
       }
+
+      else
+        postfix += tempToken + " ";
     }
 
 
